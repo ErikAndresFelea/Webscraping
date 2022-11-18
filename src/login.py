@@ -3,13 +3,12 @@ import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
+
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.common.action_chains import ActionChains
-# from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException
 
-username = 'hugoa.ferrer@semanticbots.com'
-passwd = 'SemanticBots'
 path1 = 'https://web3mba.io/'
 path2 = 'https://app.web3mba.io/users/sign_in'
 
@@ -46,10 +45,12 @@ def login_path_1():
     driver.implicitly_wait(1)
     driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/ul/li[1]/div/a').click()
 
-    # Wait and pause video
-    ### driver.implicitly_wait(5)
-    ### driver.find_element(By.ID, 'ember814').click()
+    # Ensure we are in the correct video
+    driver.implicitly_wait(2)
+    all_links = driver.find_elements(By.TAG_NAME, 'a')
+    all_links[5].click()
 
+    # Then pause it
     driver.implicitly_wait(5)
     iframe = driver.find_element(By.TAG_NAME, 'iframe')
     driver.switch_to.frame(iframe)
@@ -110,10 +111,18 @@ if __name__ == '__main__':
     chrome_options.add_argument('--start-maximized')
     driver = webdriver.Chrome(options=chrome_options)
 
+    file = open('credentials.txt', 'rt')
+    credentials = []
+    for line in file:
+        credentials.append(line)
+    
+    username = credentials[0]
+    passwd = credentials[1]
+
     login_path_1()
     # login_path_2()
 
-    time.sleep(5)
+    time.sleep(3)
     driver.quit()
 
     # https://app.web3mba.io/users/sign_in
