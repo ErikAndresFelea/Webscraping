@@ -34,6 +34,7 @@ def login_path_1():
     driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
 
     # Captcha
+    time.sleep(10)
     # captcha()
 
     # Close unused tabs
@@ -46,10 +47,13 @@ def login_path_1():
     driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/ul/li[1]/div/a').click()
 
     # Wait and pause video
+    ### driver.implicitly_wait(5)
+    ### driver.find_element(By.ID, 'ember814').click()
+
     driver.implicitly_wait(5)
-    iframe = driver.find_element(By.ID, 'iframe-ember1709')
+    iframe = driver.find_element(By.TAG_NAME, 'iframe')
     driver.switch_to.frame(iframe)
-    time.sleep(4)
+    time.sleep(5)
     button = driver.find_element(By.CSS_SELECTOR, 'button.w-vulcan-v2-button w-css-reset w-css-reset-tree w-css-reset-button-important'.replace(' ', '.'))
     ActionChains(driver).move_to_element(button).click().perform()
     
@@ -93,32 +97,12 @@ def login_path_2():
 
 def captcha():
     try:
+        # driver.implicitly_wait(3)
+        time.sleep(30)
         iframe = driver.find_element(By.NAME, 'c-eta4z8mk6gko')
-        captcha = WebDriverWait(driver, timeout=2).until(ec.visibility_of_element_located((By.TAG_NAME, 'iframe')))
-        if captcha:
-            time.sleep(10)
-    finally:
-        pass
-    # driver.implicitly_wait(1)
-    # if driver.find_element(By.TAG_NAME, 'iframe').is_displayed():
-    #     WebDriverWait(driver, timeout=10).until(driver.find_element(By.XPATH, '//*[@id="sign_in_98ad691a24"]/div[5]/button').is_displayed)
-        # time.sleep(10)
-        # driver.switch_to.frame(driver.find_element(By.TAG_NAME, 'iframe'))
-        # driver.find_element(By.ID, 'recaptcha-verify-button').click()
-        # 
-        # driver.implicitly_wait(1)
-        # driver.switch_to.window(driver.window_handles[0])
-
-    '''
-    try:
-        iframe = driver.find_element(By.TAG_NAME, 'iframe')
         driver.switch_to.frame(iframe)
+    finally:
         time.sleep(10)
-        driver.find_element(By.ID, 'recaptcha-verify-button').click()
-        driver.switch_to.window(driver.window_handle[0])
-    except:
-        NoSuchElementException
-    '''    
 
 
 if __name__ == '__main__':
