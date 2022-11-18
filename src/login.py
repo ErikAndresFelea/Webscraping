@@ -4,7 +4,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.common.action_chains import ActionChains
+# from selenium.common.exceptions import NoSuchElementException
 
 username = 'hugoa.ferrer@semanticbots.com'
 passwd = 'SemanticBots'
@@ -32,7 +34,7 @@ def login_path_1():
     driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
 
     # Captcha
-    captcha()
+    # captcha()
 
     # Close unused tabs
     driver.switch_to.window(driver.window_handles[0])
@@ -44,10 +46,13 @@ def login_path_1():
     driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/ul/li[1]/div/a').click()
 
     # Wait and pause video
-    ### time.sleep(5)
-    ### driver.find_element(By.TAG_NAME, 'video').click()
-    time.sleep(0.1)
-
+    driver.implicitly_wait(5)
+    iframe = driver.find_element(By.ID, 'iframe-ember1709')
+    driver.switch_to.frame(iframe)
+    time.sleep(4)
+    button = driver.find_element(By.CSS_SELECTOR, 'button.w-vulcan-v2-button w-css-reset w-css-reset-tree w-css-reset-button-important'.replace(' ', '.'))
+    ActionChains(driver).move_to_element(button).click().perform()
+    
 
 def login_path_2():
     # Open web page
@@ -87,9 +92,17 @@ def login_path_2():
 
 
 def captcha():
-    driver.implicitly_wait(1)
-    if driver.find_element(By.TAG_NAME, 'iframe').is_displayed():
-        time.sleep(10)
+    try:
+        iframe = driver.find_element(By.NAME, 'c-eta4z8mk6gko')
+        captcha = WebDriverWait(driver, timeout=2).until(ec.visibility_of_element_located((By.TAG_NAME, 'iframe')))
+        if captcha:
+            time.sleep(10)
+    finally:
+        pass
+    # driver.implicitly_wait(1)
+    # if driver.find_element(By.TAG_NAME, 'iframe').is_displayed():
+    #     WebDriverWait(driver, timeout=10).until(driver.find_element(By.XPATH, '//*[@id="sign_in_98ad691a24"]/div[5]/button').is_displayed)
+        # time.sleep(10)
         # driver.switch_to.frame(driver.find_element(By.TAG_NAME, 'iframe'))
         # driver.find_element(By.ID, 'recaptcha-verify-button').click()
         # 
@@ -118,3 +131,5 @@ if __name__ == '__main__':
 
     time.sleep(5)
     driver.quit()
+
+    # https://app.web3mba.io/users/sign_in
