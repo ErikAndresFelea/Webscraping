@@ -13,7 +13,7 @@ path1 = 'https://web3mba.io/'
 path2 = 'https://app.web3mba.io/users/sign_in'
 
 
-def login_path_1():
+def login():
     # Open web page
     driver.get(path1)
 
@@ -59,43 +59,6 @@ def login_path_1():
     ActionChains(driver).move_to_element(button).click().perform()
     
 
-def login_path_2():
-    # Open web page
-    driver.get(path2)
-
-    # Accept coockies & open login tab
-    driver.implicitly_wait(1)
-    driver.find_element(By.ID, 'CybotCookiebotDialogBodyLevelButtonAccept').click()
-
-    # Cambiamos de tab & Login
-    driver.implicitly_wait(1)
-    driver.find_element(By.XPATH, '//*[@id="user[email]"]').send_keys(username)
-    driver.find_element(By.XPATH, '//*[@id="user[password]"]').send_keys(passwd)
-    driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
-
-    '''
-    # For some reason first login does not work
-    time.sleep(10)
-    
-    driver.implicitly_wait(1)
-    driver.find_element(By.XPATH, '//*[@id="user[email]"]').send_keys(username)
-    driver.find_element(By.XPATH, '//*[@id="user[password]"]').send_keys(passwd)
-    driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
-    '''
-
-    # Captcha
-    captcha()
-
-    # Abrimos primer curso
-    driver.implicitly_wait(1)
-    driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/ul/li[1]/div/a').click()
-
-    # Esperamos y pausamos
-    ### time.sleep(5)
-    ### driver.find_element(By.TAG_NAME, 'video').click()
-    time.sleep(0.1)
-
-
 def captcha():
     try:
         # driver.implicitly_wait(3)
@@ -115,12 +78,10 @@ if __name__ == '__main__':
     credentials = []
     for line in file:
         credentials.append(line)
-    
     username = credentials[0]
     passwd = credentials[1]
 
-    login_path_1()
-    # login_path_2()
+    login()
 
     time.sleep(3)
     driver.quit()
