@@ -9,13 +9,10 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import NoSuchElementException
 
-path1 = 'https://web3mba.io/'
-path2 = 'https://app.web3mba.io/users/sign_in'
-
 
 def login():
     # Open web page
-    driver.get(path1)
+    driver.get(path)
 
     # Accept coockies & open login tab
     driver.implicitly_wait(1)
@@ -73,6 +70,7 @@ if __name__ == '__main__':
     chrome_options = Options()
     chrome_options.add_argument('--start-maximized')
     driver = webdriver.Chrome(options=chrome_options)
+    path = 'https://web3mba.io/'
 
     file = open('credentials.txt', 'rt')
     credentials = []
