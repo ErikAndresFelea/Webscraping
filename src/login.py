@@ -17,9 +17,7 @@ def login():
     # Accept coockies & open login tab
     driver.implicitly_wait(1)
     driver.find_element(By.ID, 'CybotCookiebotDialogBodyLevelButtonAccept').click()
-
     driver.find_element(By.XPATH, '/html/body/div[3]/div/div[1]/div/nav/ul/li[11]/a').click()
-
 
     # Swap tab and login
     driver.switch_to.window(driver.window_handles[1])
@@ -42,7 +40,7 @@ def login():
     driver.implicitly_wait(1)
     driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/ul/li[1]/div/a').click()
 
-    # Ensure we are in the correct video
+    # Ensure we are in the correct video. Get all links from course and click the first video
     driver.implicitly_wait(2)
     all_links = driver.find_elements(By.TAG_NAME, 'a')
     all_links[5].click()
@@ -67,17 +65,17 @@ def captcha():
 
 
 if __name__ == '__main__':
-    chrome_options = Options()
-    chrome_options.add_argument('--start-maximized')
-    driver = webdriver.Chrome(options=chrome_options)
-    path = 'https://web3mba.io/'
-
-    file = open('credentials.txt', 'rt')
+    file = open('C:\\Users\\Argnos\\Desktop\\SemanticBots\\src\\credentials.txt', 'rt')
     credentials = []
     for line in file:
         credentials.append(line)
     username = credentials[0]
     passwd = credentials[1]
+
+    chrome_options = Options()
+    chrome_options.add_argument('--start-maximized')
+    driver = webdriver.Chrome(options=chrome_options)
+    path = 'https://web3mba.io/'
 
     login()
 
