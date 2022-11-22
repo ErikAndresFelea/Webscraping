@@ -54,24 +54,27 @@ def captcha():
 
 # Checks how many possible pages are and gets all links from all courses
 def obtain_links() -> list:
-    driver.implicitly_wait(2)
     all_links = []
 
     # Searches on all posible course pages and stores links on all_links
     page_exists = True
     while page_exists:
+        ### print('Total amount of links ---> ', len(all_links))
+        ### driver.implicitly_wait(5)
+
         # Seachs for additional page, if exists, jump
-        next_url = ''   
+        next_url = False
+        next_path = ''   
         page_elem = driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/nav/ul/li[7]')
         link_elem = page_elem.find_elements(By.TAG_NAME, 'a')
         
-        if link_elem < 1:
+        # If there is no other page, end loop, if yes, save url
+        if len(link_elem) < 1: 
             page_exists = False
         else:
-            current_url = link_elem[0].get_attribute('href')
-            driver.get(url)
-        
-        
+            next_url = True
+            next_path = link_elem[0].get_attribute('href')  
+             
         # For every page obtains links to all courses
         courses = obtain_courses_current_page()
 
@@ -79,14 +82,18 @@ def obtain_links() -> list:
         for link in courses:
             all_links.append(obtain_vids_current_course(link))
 
-        
+        # If there is another page with courses, jump there
+        if next_url:
+            driver.get(next_path)
+            
+
 
 
 # Returns a list with links to all courses from the current page
 def obtain_courses_current_page() -> list:
 
     # Get all course links from current page
-    driver.implicitly_wait(2)
+    driver.implicitly_wait(5)
     courses = driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/ul').find_elements(By.TAG_NAME, 'li')
 
     all_course_links = []
@@ -103,7 +110,7 @@ def obtain_vids_current_course(course: str) -> list:
     driver.get(course)
 
     # Getting all links from a course
-    driver.implicitly_wait(2)
+    driver.implicitly_wait(5)
     course_links = driver.find_element(By.XPATH, '//*[@id="ui-id-2"]/ul').find_elements(By.TAG_NAME, 'li')
 
     all_links = []
