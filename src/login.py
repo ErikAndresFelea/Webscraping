@@ -17,24 +17,16 @@ def login():
     # Accept coockies & open login tab
     driver.implicitly_wait(1)
     driver.find_element(By.ID, 'CybotCookiebotDialogBodyLevelButtonAccept').click()
-    driver.find_element(By.XPATH, '/html/body/div[3]/div/div[1]/div/nav/ul/li[11]/a').click()
+    driver.find_element(By.PARTIAL_LINK_TEXT, 'Iniciar sesi').click()
 
-    # Swap tab and login
-    driver.switch_to.window(driver.window_handles[1])
-
+    # Login with credentials
     driver.implicitly_wait(1)
     driver.find_element(By.XPATH, '//*[@id="user[email]"]').send_keys(username)
     driver.find_element(By.XPATH, '//*[@id="user[password]"]').send_keys(passwd)
     driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
 
     # Captcha
-    time.sleep(10)
-    # captcha()
-
-    # Close unused tabs
-    driver.switch_to.window(driver.window_handles[0])
-    driver.close()
-    driver.switch_to.window(driver.window_handles[0])
+    captcha()
 
     # Open first course
     driver.implicitly_wait(1)
@@ -55,17 +47,23 @@ def login():
     
 
 def captcha():
+    '''
     try:
-        # driver.implicitly_wait(3)
-        time.sleep(30)
+        driver.implicitly_wait(3)
         iframe = driver.find_element(By.NAME, 'c-eta4z8mk6gko')
         driver.switch_to.frame(iframe)
     finally:
         time.sleep(10)
+    '''
+
+    found = driver.find_element(By.TAG_NAME, 'iframe').is_displayed()
+    if found:
+        time.sleep(10)
+
 
 
 if __name__ == '__main__':
-    file = open('C:\\Users\\Argnos\\Desktop\\SemanticBots\\src\\credentials.txt', 'rt')
+    file = open('C:\\Users\\remoA\\Desktop\\SemanticBots\\src\\credentials.txt', 'rt')
     credentials = []
     for line in file:
         credentials.append(line)
@@ -75,7 +73,7 @@ if __name__ == '__main__':
     chrome_options = Options()
     chrome_options.add_argument('--start-maximized')
     driver = webdriver.Chrome(options=chrome_options)
-    path = 'https://web3mba.io/'
+    path = 'https://app.web3mba.io/'
 
     login()
 
