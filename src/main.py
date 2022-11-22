@@ -87,8 +87,6 @@ def obtain_links() -> list:
             driver.get(next_path)
             
 
-
-
 # Returns a list with links to all courses from the current page
 def obtain_courses_current_page() -> list:
 
@@ -117,10 +115,13 @@ def obtain_vids_current_course(course: str) -> list:
     for link in course_links:
         all_links.append(link.find_element(By.TAG_NAME, 'a').get_attribute('href'))
 
+
+# Process the links obtained to retain only the vids
+def proces_links(links: list[list]):
     
-
-
-
+    for list in links:
+        for link in list:
+            pass
 
 
 if __name__ == '__main__':
@@ -145,3 +146,8 @@ if __name__ == '__main__':
     driver.quit()
 
     # https://app.web3mba.io/users/sign_in
+
+    '''
+    Revisar los links obtenidos de los cursos, puede que no coja todos. 
+    Ademas comprobar que solo son links a videos
+    '''
