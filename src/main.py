@@ -61,7 +61,8 @@ def obtain_links() -> list[list[list]]:
     page_exists = True
     while page_exists:
         # For every page obtains links to all courses
-        course_links.append(obtain_courses_current_page())
+        page_links = obtain_courses_current_page()
+        course_links.extend(page_links)
         
         # Seachs for additional page
         page_elem = driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/nav/ul/li[7]')
@@ -76,9 +77,8 @@ def obtain_links() -> list[list[list]]:
              
     # And for every course gets all links
     video_links = []
-    for links in course_links:
-        for link in links:
-            video_links.append(obtain_links_current_course(link))
+    for link in course_links:
+        video_links.append(obtain_links_current_course(link))
     
     return video_links
 
@@ -98,23 +98,17 @@ def obtain_courses_current_page() -> list:
 
 # Returns a list with links to all videos from a course
 def obtain_links_current_course(course: str) -> list[list]:
-    '''Abro el curso'''
     driver.get(course)  
 
     # Obtain all chapters
     driver.implicitly_wait(5)
-    '''Obtengo los diferentes capitulos'''
     chapters = driver.find_element(By.CSS_SELECTOR, 'div.course-player__chapters-menu').find_elements(By.TAG_NAME, 'div')
 
     # Getting all links from a chapter, of all chapters
     course_links = []
-    '''De cada capitulo, obtengo los diferentes contenidos'''
     for chapter in chapters:
         chapter_elements = chapter.find_element(By.XPATH, '//*[@id="ui-id-2"]/ul').find_elements(By.TAG_NAME, 'li')
 
-        '''Para cada uno de los contenidos obtenidos, tengo que comprobar si es un texto o un video
-        si es un video, lo añado a la lista de contenidos del capitulo y al acabar añado la lista de contenidos
-        del capitulo a la lista de contenidos del bloque'''
         chapter_links = []
         for element in chapter_elements:
             vid_url = element.find_element(By.XPATH, './/a').get_attribute('href')
@@ -161,6 +155,6 @@ if __name__ == '__main__':
     # https://app.web3mba.io/users/sign_in
 
     '''
-    Revisar los links obtenidos de los cursos, puede que no coja todos. 
+    Revisar los links obtenidos de los cursos, puede que guarde los mismos. 
     Ademas comprobar que solo son links a videos
     '''
