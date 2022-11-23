@@ -11,8 +11,8 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import NoSuchElementException
 
 
-# Logs on the website
 def login(website: str):
+    ''' Logs on the website '''
     # Open web page
     driver.get(website)
 
@@ -30,8 +30,9 @@ def login(website: str):
     # Captcha
     captcha()
 
-# Attempt to deal with captcha
+
 def captcha():
+    '''Attempt to deal with captcha'''
     '''
     try:
         driver.implicitly_wait(3)
@@ -53,8 +54,8 @@ def captcha():
     '''
 
 
-# Checks how many possible pages are and gets all links from all courses
-def obtain_links() -> list[list[list]]:
+def obtain_links():
+    '''Checks how many possible pages are and gets the links from all courses'''    
     course_links = []
 
     # Visits every page with courses
@@ -76,15 +77,12 @@ def obtain_links() -> list[list[list]]:
             driver.get(next_path)
              
     # And for every course gets all links
-    video_links = []
     for link in course_links:
-        video_links.append(obtain_links_current_course(link))
+        obtain_links_current_course(link)
     
-    return video_links
 
-# Returns a list with links to all courses from the current page
 def obtain_courses_current_page() -> list:
-
+    '''Returns a list with the links of all courses from the current page'''
     # Get all course links from current page
     driver.implicitly_wait(5)
     courses = driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/ul').find_elements(By.TAG_NAME, 'li')
@@ -96,32 +94,29 @@ def obtain_courses_current_page() -> list:
     return page_course_links
 
 
-# Returns a list with links to all videos from a course
-def obtain_links_current_course(course: str) -> list[list]:
+def obtain_links_current_course(course: str):
+    '''Stores all chapters with their link of a course'''
     driver.get(course)  
-
-    # Obtain all chapters
+    
+    file.write('Course --- > ' + course + '\n')
+    # Obtain all chapters of the current course
     driver.implicitly_wait(5)
     chapters = driver.find_element(By.CSS_SELECTOR, 'div.course-player__chapters-menu').find_elements(By.TAG_NAME, 'div')
 
-    # Getting all links from a chapter, of all chapters
-    course_links = []
+    # For every chapter of a course
     for chapter in chapters:
-        chapter_elements = chapter.find_element(By.XPATH, '//*[@id="ui-id-2"]/ul').find_elements(By.TAG_NAME, 'li')
+        file.write('\tChapter --- > ' + 'chapter' + '\n')
+        chapter_elements = chapter.find_element(By.XPATH, './/ul').find_elements(By.TAG_NAME, 'li')
 
-        chapter_links = []
+        # Get links from all chapter content
         for element in chapter_elements:
             vid_url = element.find_element(By.XPATH, './/a').get_attribute('href')
-            chapter_links.append(vid_url)
-            # chapter_vids = obtain_vids_current_chapter(element)
-            # chapter_links.append(chapter_vids)
-            
-        course_links.append(chapter_links)
-    
-    return course_links
+            file.write('\t\tContent --- > ' + vid_url + '\n')
 
-# Check if the element is a vid, and return his url
-def obtain_vids_current_chapter(element: WebElement) -> str:
+
+def obtain_vids_current_chapter(element: WebElement):
+    '''Check if the element given is a video, and return his url
+    Currently stores all links'''
     url = element.find_element(By.TAG_NAME, 'a').get_attribute('href')
     element.find_element(By.TAG_NAME, 'a').find_element()
 
@@ -135,6 +130,7 @@ if __name__ == '__main__':
         credentials.append(line)
     username = credentials[0]
     passwd = credentials[1]
+    file.close()
 
     # Start driver on desired website
     chrome_options = Options()
@@ -142,12 +138,17 @@ if __name__ == '__main__':
     driver = webdriver.Chrome(options=chrome_options)
     path = 'https://app.web3mba.io/'
 
+    # Clear old data
+    file = open('C:\\Users\\Argnos\\Desktop\\SemanticBots\\src\\store_info.txt', 'w')
+    file.close()
+
+    # Store new data
+    file = open('C:\\Users\\Argnos\\Desktop\\SemanticBots\\src\\store_info.txt', 'a')
+
     login(path)
     courses = obtain_links()
 
-    for course in courses:
-        for chapter in course:
-            print(chapter)
+    file.close()
 
     time.sleep(3)
     driver.quit()
