@@ -24,7 +24,7 @@ def login(website: str):
     driver.implicitly_wait(1)
     driver.find_element(By.XPATH, '//*[@id="user[email]"]').send_keys(username)
     driver.find_element(By.XPATH, '//*[@id="user[password]"]').send_keys(passwd)
-    ### driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
+    driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
 
     # Captcha
     captcha()
@@ -54,38 +54,30 @@ def captcha():
 
 # Checks how many possible pages are and gets all links from all courses
 def obtain_links() -> list:
-    all_links = []
+    course_links = []
 
-    # Searches on all posible course pages and stores links on all_links
+    # Visits every page with courses
     page_exists = True
     while page_exists:
-        ### print('Total amount of links ---> ', len(all_links))
-        ### driver.implicitly_wait(5)
-
-        # Seachs for additional page, if exists, jump
-        next_url = False
-        next_path = ''   
+        # For every page obtains links to all courses
+        course_links.append(obtain_courses_current_page())
+        
+        # Seachs for additional page
         page_elem = driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/nav/ul/li[7]')
         link_elem = page_elem.find_elements(By.TAG_NAME, 'a')
         
-        # If there is no other page, end loop, if yes, save url
+        # If there is no other page, end loop, if yes, jump
         if len(link_elem) < 1: 
             page_exists = False
         else:
-            next_url = True
             next_path = link_elem[0].get_attribute('href')  
-             
-        # For every page obtains links to all courses
-        courses = obtain_courses_current_page()
-
-        # And for every course gets all links
-        for link in courses:
-            all_links.append(obtain_vids_current_course(link))
-
-        # If there is another page with courses, jump there
-        if next_url:
             driver.get(next_path)
-            
+             
+    # And for every course gets all links
+    video_links = []
+    for link in course_links:
+        video_links.append(obtain_vids_current_course(link))
+
 
 # Returns a list with links to all courses from the current page
 def obtain_courses_current_page() -> list:
@@ -111,9 +103,9 @@ def obtain_vids_current_course(course: str) -> list:
     driver.implicitly_wait(5)
     course_links = driver.find_element(By.XPATH, '//*[@id="ui-id-2"]/ul').find_elements(By.TAG_NAME, 'li')
 
-    all_links = []
+    course_links = []
     for link in course_links:
-        all_links.append(link.find_element(By.TAG_NAME, 'a').get_attribute('href'))
+        course_links.append(link.find_element(By.TAG_NAME, 'a').get_attribute('href'))
 
 
 # Process the links obtained to retain only the vids
@@ -126,7 +118,7 @@ def proces_links(links: list[list]):
 
 if __name__ == '__main__':
     # Obtain credentials from file
-    file = open('C:\\Users\\remoA\\Desktop\\SemanticBots\\src\\credentials.txt', 'rt')
+    file = open('C:\\Users\\Argnos\\Desktop\\SemanticBots\\src\\credentials.txt', 'rt')
     credentials = []
     for line in file:
         credentials.append(line)
