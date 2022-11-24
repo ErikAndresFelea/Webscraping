@@ -5,11 +5,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.common.exceptions import NoSuchElementException
-
 
 def login(website: str):
     ''' Logs on the website '''
@@ -25,7 +20,7 @@ def login(website: str):
     driver.implicitly_wait(1)
     driver.find_element(By.XPATH, '//*[@id="user[email]"]').send_keys(username)
     driver.find_element(By.XPATH, '//*[@id="user[password]"]').send_keys(passwd)
-    # driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
+    driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
 
     # Captcha
     captcha()
@@ -121,7 +116,6 @@ def obtain_links_current_chapter(chapter: WebElement):
     for unit in chapter_units:
         element_url = unit.find_element(By.XPATH, './/a').get_attribute('href')
         file.write('\t\tContent --- > ' + element_url + '\n')
-
 
 
 if __name__ == '__main__':

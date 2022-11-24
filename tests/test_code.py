@@ -17,6 +17,30 @@
     time.sleep(5)
     button = driver.find_element(By.CSS_SELECTOR, 'button.w-vulcan-v2-button w-css-reset w-css-reset-tree w-css-reset-button-important'.replace(' ', '.'))
     ActionChains(driver).move_to_element(button).click().perform()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    def captcha():
+    try:
+        driver.implicitly_wait(3)
+        iframe = driver.find_element(By.NAME, 'c-eta4z8mk6gko')
+        driver.switch_to.frame(iframe)
+    finally:
+        time.sleep(10)
+    if found:
+        print(found)
+
+    driver.implicitly_wait(2)
+    found = driver.find_elements(By.TAG_NAME, 'iframe')
+    print('Found ----> ', len(found))
+    if len(found) > 0:
+        WebDriverWait(driver, timeout=20).until(driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/ul/li[1]/div/a'))
     '''
     
 
@@ -26,11 +50,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
-
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.common.exceptions import NoSuchElementException
 
 
 # Logs on the website
@@ -47,42 +66,29 @@ def login(website: str):
     driver.implicitly_wait(1)
     driver.find_element(By.XPATH, '//*[@id="user[email]"]').send_keys(username)
     driver.find_element(By.XPATH, '//*[@id="user[password]"]').send_keys(passwd)
-    # driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
+    driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
 
     # Captcha
-    captcha()
-
-    driver.implicitly_wait(2)
-    x = driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/ul/li[2]/div/a').get_attribute('href')
-    driver.get(x)
-    driver.implicitly_wait(2)
-    element = driver.find_element(By.XPATH, '//*[@id="ember823"]/div[2]/div')
-    print('text: ', element.tag_name)
-
-# Attempt to deal with captcha
-def captcha():
-    '''
-    try:
-        driver.implicitly_wait(3)
-        iframe = driver.find_element(By.NAME, 'c-eta4z8mk6gko')
-        driver.switch_to.frame(iframe)
-    finally:
-        time.sleep(10)
-    if found:
-        print(found)
-    '''
     time.sleep(10)
 
-    '''
+    # Get first course link
     driver.implicitly_wait(2)
-    found = driver.find_elements(By.TAG_NAME, 'iframe')
-    print('Found ----> ', len(found))
-    if len(found) > 0:
-        WebDriverWait(driver, timeout=20).until(driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/ul/li[1]/div/a'))
-    '''
+    courses = driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/ul').find_elements(By.TAG_NAME, 'li')
+    first_course = courses[0].find_element(By.TAG_NAME, 'a').get_attribute('href')
+    driver.get(first_course)
 
+    # Try to get text / video text.
+    driver.implicitly_wait(2)
+    element = driver.find_element(By.XPATH, '//*[@id="ember797"]/div[2]/div').get_attribute('innerHTML')
+    l = element.split('\n')
+    value = ''
+    for e in l:
+        x = e.strip()
+        if x[:1] == 'V':
+            value = x
 
-# Checks how many possible pages are and gets all links from all courses
+    print(value)
+
 
 if __name__ == '__main__':
     # Obtain credentials from file
