@@ -98,7 +98,7 @@ def obtain_courses_current_page() -> list:
 def obtain_chapters_current_course(course: str):
     '''Searches for units of all chapters'''
     driver.get(course)  
-    file.write('Course --- >' + driver.title + ' | ' + course + '\n')
+    file.write('Course --- > ' + driver.title + ' | ' + course + '\n')
     
     # Obtain all chapters of the current course
     driver.implicitly_wait(5)
@@ -117,14 +117,9 @@ def obtain_links_current_chapter(chapter: WebElement):
     file.write('\tChapter --- > ' + chapter_title + '\n')
     chapter_units = chapter.find_element(By.TAG_NAME, 'ul').find_elements(By.TAG_NAME, 'li')
     
-    # Get links of all content and look if they video or not
+    # Get links of all content
     for unit in chapter_units:
-        is_video = unit.find_elements(By.TAG_NAME, 'iframe')
-        if is_video > 0:
-            element_url = is_video[0].get_attribute('src')
-        else:
-            element_url = unit.find_element(By.TAG_NAME, 'a').get_attribute('href')
-        
+        element_url = unit.find_element(By.XPATH, './/a').get_attribute('href')
         file.write('\t\tContent --- > ' + element_url + '\n')
 
 
