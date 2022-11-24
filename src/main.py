@@ -77,6 +77,7 @@ def obtain_links():
             driver.get(next_path)
              
     # And for every course gets all links
+
     for link in course_links:
         obtain_links_current_course(link)
     
@@ -101,17 +102,19 @@ def obtain_links_current_course(course: str):
     file.write('Course --- > ' + course + '\n')
     # Obtain all chapters of the current course
     driver.implicitly_wait(5)
-    chapters = driver.find_element(By.CSS_SELECTOR, 'div.course-player__chapters-menu').find_elements(By.TAG_NAME, 'div')
-
+    chapters = driver.find_element(By.CSS_SELECTOR, 'div.course-player__chapters-menu').find_elements(By.XPATH, './*')
+    
     # For every chapter of a course
     for chapter in chapters:
         file.write('\tChapter --- > ' + 'chapter' + '\n')
-        chapter_elements = chapter.find_element(By.XPATH, './/ul').find_elements(By.TAG_NAME, 'li')
-
+        chapter_elements = chapter.find_element(By.TAG_NAME, 'ul').find_elements(By.TAG_NAME, 'li')
+        
         # Get links from all chapter content
         for element in chapter_elements:
             vid_url = element.find_element(By.XPATH, './/a').get_attribute('href')
             file.write('\t\tContent --- > ' + vid_url + '\n')
+
+    file.write('\n\n\n')
 
 
 def obtain_vids_current_chapter(element: WebElement):
@@ -138,15 +141,13 @@ if __name__ == '__main__':
     driver = webdriver.Chrome(options=chrome_options)
     path = 'https://app.web3mba.io/'
 
-    # Clear old data
+    # Clear old data & store new data
     file = open('C:\\Users\\Argnos\\Desktop\\SemanticBots\\src\\store_info.txt', 'w')
     file.close()
-
-    # Store new data
     file = open('C:\\Users\\Argnos\\Desktop\\SemanticBots\\src\\store_info.txt', 'a')
 
     login(path)
-    courses = obtain_links()
+    obtain_links()
 
     file.close()
 
