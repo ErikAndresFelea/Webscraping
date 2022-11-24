@@ -118,18 +118,22 @@ def obtain_links_current_chapter(chapter: WebElement):
 
         # Checking if it is video or text. 2nd element has the text "Video" or "Text"
         element_type = unit.find_element(By.XPATH, './/a/div[2]/div').get_attribute('innerHTML').split('\n')
+
+        file.write('\t\t' + element_type[2].strip() + ' --- > ' + element_url + '\n')
         
+        '''
         # If its text, just save unit url 
-        if element_type[1].strip() == 'TEXTO':
+        if element_type[2].strip() == 'Texto':
             file.write('\t\tTEXTO --- > ' + element_url + '\n')
 
         # Else, save video url (not unit url)
         else:
-            driver.get(element_url)
-            driver.implicitly_wait(2)
-            video_link = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
-            file.write('\t\tVIDEO --- > ' + video_link + '\n')
-
+            # driver.get(element_url)
+            # driver.implicitly_wait(2)
+            # video_link = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
+            # file.write('\t\tVIDEO --- > ' + video_link + '\n')
+            file.write('\t\tVIDEO --- > ' + element_url + '\n')
+        '''
         
 
 
