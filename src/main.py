@@ -79,7 +79,7 @@ def obtain_links():
     # And for every course gets all links
 
     for link in course_links:
-        obtain_links_current_course(link)
+        obtain_chapters_current_course(link)
     
 
 def obtain_courses_current_page() -> list:
@@ -95,33 +95,37 @@ def obtain_courses_current_page() -> list:
     return page_course_links
 
 
-def obtain_links_current_course(course: str):
-    '''Stores all chapters with their link of a course'''
+def obtain_chapters_current_course(course: str):
+    '''Searches for units of all chapters'''
     driver.get(course)  
+    file.write('Course --- >' + driver.title + ' | ' + course + '\n')
     
-    file.write('Course --- > ' + course + '\n')
     # Obtain all chapters of the current course
     driver.implicitly_wait(5)
     chapters = driver.find_element(By.CSS_SELECTOR, 'div.course-player__chapters-menu').find_elements(By.XPATH, './*')
     
     # For every chapter of a course
     for chapter in chapters:
-        file.write('\tChapter --- > ' + 'chapter' + '\n')
-        chapter_elements = chapter.find_element(By.TAG_NAME, 'ul').find_elements(By.TAG_NAME, 'li')
-        
-        # Get links from all chapter content
-        for element in chapter_elements:
-            vid_url = element.find_element(By.XPATH, './/a').get_attribute('href')
-            file.write('\t\tContent --- > ' + vid_url + '\n')
+        obtain_links_current_chapter(chapter)
 
     file.write('\n\n\n')
 
 
-def obtain_vids_current_chapter(element: WebElement):
-    '''Check if the element given is a video, and return his url
-    Currently stores all links'''
-    url = element.find_element(By.TAG_NAME, 'a').get_attribute('href')
-    element.find_element(By.TAG_NAME, 'a').find_element()
+def obtain_links_current_chapter(chapter: WebElement):
+    '''Stores links from all units'''
+    chapter_title = chapter.find_element(By.TAG_NAME, 'h2').text
+    file.write('\tChapter --- > ' + chapter_title + '\n')
+    chapter_units = chapter.find_element(By.TAG_NAME, 'ul').find_elements(By.TAG_NAME, 'li')
+    
+    # Get links of all content and look if they video or not
+    for unit in chapter_units:
+        is_video = unit.find_elements(By.TAG_NAME, 'iframe')
+        if is_video > 0:
+            element_url = is_video[0].get_attribute('src')
+        else:
+            element_url = unit.find_element(By.TAG_NAME, 'a').get_attribute('href')
+        
+        file.write('\t\tContent --- > ' + element_url + '\n')
 
 
 
@@ -153,10 +157,3 @@ if __name__ == '__main__':
 
     time.sleep(3)
     driver.quit()
-
-    # https://app.web3mba.io/users/sign_in
-
-    '''
-    Revisar los links obtenidos de los cursos, puede que guarde los mismos. 
-    Ademas comprobar que solo son links a videos
-    '''
