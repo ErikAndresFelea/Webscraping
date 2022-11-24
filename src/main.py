@@ -114,8 +114,27 @@ def obtain_links_current_chapter(chapter: WebElement):
     
     # Get links of all content
     for unit in chapter_units:
-        element_url = unit.find_element(By.XPATH, './/a').get_attribute('href')
-        file.write('\t\tContent --- > ' + element_url + '\n')
+        element_url = unit.find_element(By.TAG_NAME, 'a').get_attribute('href')
+
+        # Checking if it is video or text. 2nd element has the text "Video" or "Text"
+        element_type = unit.find_element(By.XPATH, './/a/div[2]/div').get_attribute('innerHTML').split('\n')
+        
+        # If its text, just save unit url 
+        if element_type[1].strip() == 'TEXTO':
+            file.write('\t\tTEXTO --- > ' + element_url + '\n')
+
+        # Else, save video url (not unit url)
+        else:
+            driver.get(element_url)
+            driver.implicitly_wait(2)
+            video_link = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
+            file.write('\t\tVIDEO --- > ' + video_link + '\n')
+
+        
+
+
+
+
 
 
 if __name__ == '__main__':

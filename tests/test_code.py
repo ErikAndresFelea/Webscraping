@@ -79,10 +79,9 @@ def login(website: str):
 
     # Try to get text / video text.
     driver.implicitly_wait(2)
-    element = driver.find_element(By.XPATH, '//*[@id="ember797"]/div[2]/div').get_attribute('innerHTML')
-    l = element.split('\n')
+    element = driver.find_element(By.XPATH, '//*[@id="ember797"]/div[2]/div').get_attribute('innerHTML').split('\n')
     value = ''
-    for e in l:
+    for e in element:
         x = e.strip()
         if x[:1] == 'V':
             value = x
