@@ -170,14 +170,14 @@ def mark_as_completed(file_type: str):
             playbar = driver.find_element(By.XPATH, '/html/body/div/div/div/div/div/div[2]/div[2]/div[2]/div/div[4]/div/div[4]/div')
             ac(driver).move_to_element(playbar).click().perform()
 
-
-    else:
+    elif file_type[:1] != 'E':
         # If one, its not completed
+        if file_type[:1] == 'M':
+                time.sleep(3)
         is_completed = len(driver.find_element(By.TAG_NAME, 'footer').find_elements(By.TAG_NAME, 'button'))
 
         if is_completed == 1:
-            if file_type[:1] == 'M':
-                    time.sleep(3)
+            time.sleep(1)
             button = driver.find_element(By.XPATH, '//*[@id="course-player-footer"]/button/div')
             ac(driver).move_to_element(button).click().perform()
 
