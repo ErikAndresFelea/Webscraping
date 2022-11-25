@@ -91,7 +91,7 @@ def obtain_courses_current_page() -> list:
 
 
 def obtain_chapters_current_course(course: str):
-    '''Searches for units of all chapters'''
+    '''Searches for all the units of all the chapters'''
     driver.get(course)  
     file.write('Course --- > ' + driver.title + ' | ' + course + '\n')
     
@@ -116,7 +116,7 @@ def obtain_units_current_chapter(chapter: WebElement):
     # Get links of all content
     for unit in chapter_units:
         unit_url = unit.find_element(By.TAG_NAME, 'a').get_attribute('href')
-        unit_title = unit.find_element(By.TAG_NAME, 'a').find_elements(By.TAG_NAME, 'dive')[1]
+        unit_title = unit.find_element(By.TAG_NAME, 'a').find_elements(By.TAG_NAME, 'div')[1]
         unit_title = unit_title.get_attribute('innerHTML')[1].strip()
 
         # Checking if it is video or text. 2nd element has the text "Video" or "Text"
@@ -125,14 +125,20 @@ def obtain_units_current_chapter(chapter: WebElement):
 
         # If its video, open new tab and get url
         if file_type[:1] == 'V':
+            driver.execute_script("window.open('');")
+            driver.switch_to.window(driver.window_handles[1])
             driver.get(unit_url)
+
             driver.implicitly_wait(2)
-            video_link = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
-            file.write('\t\tVIDEO --- > ' + video_link + '\n')
+            video_url = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
+            file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + video_url + '\n')
+
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
 
         # If text, get unit url
         else:
-            file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper + ' --- > ' + unit_url + '\n')
+            file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + unit_url + '\n')
         
 
 
