@@ -82,8 +82,15 @@ def login(website: str):
     ''' EDIT FROM HERE ''' 
     driver.implicitly_wait(2)
     url = driver.find_element(By.TAG_NAME, 'a').get_attribute('href')
-    driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + 't')
+    driver.execute_script("window.open('');")
+    driver.switch_to.window(driver.window_handles[1])
     driver.get(url)
+    time.sleep(5)
+    url = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
+    driver.get(url)
+    time.sleep(5)
+    driver.close()
+    driver.switch_to.window(driver.window_handles[0])
     time.sleep(10)
     
 
