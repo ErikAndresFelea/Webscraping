@@ -49,7 +49,8 @@ def login(website: str):
 
         if file_type[:1] == 'V':
             # If none, its not completed
-            is_completed = len(unit.find_elements(By.TAG_NAME, 'footer'))
+            driver.implicitly_wait(5)
+            is_completed = len(driver.find_elements(By.TAG_NAME, 'footer'))
 
             ''' Code already done here '''
             
@@ -58,26 +59,22 @@ def login(website: str):
 
                 # Switch to iframe and move playbar
                 iframe = driver.find_element(By.TAG_NAME, 'iframe')
-                driver.switch_to.window(iframe)
+                driver.switch_to.frame(iframe)
 
-                time_bar = driver.find_element(By.XPATH, '//*[@id="w-vulcan-v2-28"]/div[4]/div/div[4]/div/div/div/div[2]')
-                ac(driver).move_to_element(time_bar).click().perform()
+                playbar = driver.find_element(By.XPATH, '//*[@id="w-vulcan-v2-28"]/div[4]/div/div[4]/div')
+                ac(driver).move_to_element(playbar).click().perform()
 
                 driver.switch_to.window(driver.window_handles[0])
 
-            driver.find_element(By.TAG_NAME, 'footer').find_element(By.TAG_NAME, 'button').click()
 
         else:
             # If one, its not completed
-            is_completed = len(unit.find_element(By.TAG_NAME, 'footer').find_elements(By.TAG_NAME, 'button'))
+            is_completed = len(driver.find_element(By.TAG_NAME, 'footer').find_elements(By.TAG_NAME, 'button'))
 
             ''' Code already done here '''
 
             if is_completed == 1:
                 driver.find_element(By.TAG_NAME, 'button').click()
-
-            else:
-                driver.find_elements(By.TAG_NAME, 'button')[1].click()
 
 
         driver.close()
