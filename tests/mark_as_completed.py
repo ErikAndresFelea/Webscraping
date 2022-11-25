@@ -39,18 +39,6 @@ def login(website: str):
     ''' EDIT FROM HERE ''' 
     units = driver.find_element(By.XPATH, '//*[@id="ui-id-2"]/ul').find_elements(By.TAG_NAME, 'li')
     
-    units.pop()
-    units.pop()
-    units.pop()
-    units.pop()
-    units.pop()
-    units.pop()
-    units.pop()
-    units.pop()
-    units.pop()
-    units.pop()
-    units.pop()
-    
     for unit in units:
         unit_url = unit.find_element(By.TAG_NAME, 'a').get_attribute('href')
 
