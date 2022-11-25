@@ -4,10 +4,12 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.common.action_chains import ActionChains as ac
 
 
 def login(website: str):
     ''' Logs on the website '''
+    
     # Open web page
     driver.get(website)
 
@@ -28,6 +30,7 @@ def login(website: str):
 
 def captcha():
     '''Attempt to deal with captcha'''
+    
     '''
     try:
         driver.implicitly_wait(3)
@@ -50,6 +53,7 @@ def captcha():
 
 
 def obtain_links():
+    
     '''Checks how many possible pages are and gets the links from all courses'''    
     course_links = []
 
@@ -78,6 +82,7 @@ def obtain_links():
     
 
 def obtain_courses_current_page() -> list:
+    
     '''Returns a list with the links of all courses from the current page'''
     # Get all course links from current page
     driver.implicitly_wait(5)
@@ -92,6 +97,7 @@ def obtain_courses_current_page() -> list:
 
 def obtain_chapters_current_course(course: str):
     '''Searches for all the units of all the chapters'''
+    
     driver.get(course)  
     file.write('Course --- > ' + driver.title + ' | ' + course + '\n')
     
@@ -108,6 +114,7 @@ def obtain_chapters_current_course(course: str):
 
 def obtain_units_current_chapter(chapter: WebElement):
     '''Stores links from all units'''
+    
     chapter_title = chapter.find_element(By.TAG_NAME, 'h2').text
     file.write('\tChapter --- > ' + chapter_title + '\n')
 
@@ -123,27 +130,53 @@ def obtain_units_current_chapter(chapter: WebElement):
         file_type = unit.find_element(By.XPATH, './/a/div[2]/div').get_attribute('innerHTML').split('\n')
         file_type = file_type[2].strip()
 
+        # Open new tab
+        driver.execute_script("window.open('');")
+        driver.switch_to.window(driver.window_handles[1])
+        driver.get(unit_url)
+        driver.implicitly_wait(2)
+
         # If its video, open new tab and get url
         if file_type[:1] == 'V':
-            driver.execute_script("window.open('');")
-            driver.switch_to.window(driver.window_handles[1])
-            driver.get(unit_url)
-
-            driver.implicitly_wait(2)
             video_url = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
             file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + video_url + '\n')
-
-            driver.close()
-            driver.switch_to.window(driver.window_handles[0])
 
         # If text, get unit url
         else:
             file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + unit_url + '\n')
         
+        mark_as_completed(file_type)
+        
+        driver.close()
+        driver.switch_to.window(driver.window_handles[0])
 
 
+def mark_as_completed(file_type: str):
+    ''' Marks every unit of every chapter of every course as completed '''
+    
+    if file_type[:1] == 'V':
+        # If none, its not completed
+        driver.implicitly_wait(5)
+        is_completed = len(driver.find_elements(By.TAG_NAME, 'footer'))
+
+        # If not completed, mark as completed
+        if is_completed == 0:
+
+            # Switch to iframe and move playbar
+            iframe = driver.find_element(By.TAG_NAME, 'iframe')
+            driver.switch_to.frame(iframe)
+
+            playbar = driver.find_element(By.XPATH, '/html/body/div/div/div/div/div/div[2]/div[2]/div[2]/div/div[4]/div/div[4]/div')
+            ac(driver).move_to_element(playbar).click().perform()
 
 
+    else:
+        # If one, its not completed
+        is_completed = len(driver.find_element(By.TAG_NAME, 'footer').find_elements(By.TAG_NAME, 'button'))
+
+        if is_completed == 1:
+            button = driver.find_element(By.XPATH, '//*[@id="course-player-footer"]/button/div')
+            ac(driver).move_to_element(button).click().perform()
 
 
 if __name__ == '__main__':
