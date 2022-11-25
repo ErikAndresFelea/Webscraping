@@ -61,7 +61,7 @@ def login(website: str):
                 iframe = driver.find_element(By.TAG_NAME, 'iframe')
                 driver.switch_to.frame(iframe)
 
-                playbar = driver.find_element(By.XPATH, '//*[@id="w-vulcan-v2-28"]/div[4]/div/div[4]/div')
+                playbar = driver.find_element(By.XPATH, '/html/body/div/div/div/div/div/div[2]/div[2]/div[2]/div/div[4]/div/div[4]/div')
                 ac(driver).move_to_element(playbar).click().perform()
 
                 driver.switch_to.window(driver.window_handles[0])
