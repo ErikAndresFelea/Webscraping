@@ -143,7 +143,7 @@ def obtain_links_current_chapter(chapter: WebElement):
 
 if __name__ == '__main__':
     # Obtain credentials from file
-    file = open('C:\\Users\\Argnos\\Desktop\\SemanticBots\\src\\credentials.txt', 'rt')
+    file = open('src\\credentials.txt', 'rt')
     credentials = []
     for line in file:
         credentials.append(line)
@@ -158,9 +158,9 @@ if __name__ == '__main__':
     path = 'https://app.web3mba.io/'
 
     # Clear old data & store new data
-    file = open('C:\\Users\\Argnos\\Desktop\\SemanticBots\\src\\store_info.txt', 'w')
+    file = open('src\\store_info.txt', 'w')
     file.close()
-    file = open('C:\\Users\\Argnos\\Desktop\\SemanticBots\\src\\store_info.txt', 'a')
+    file = open('src\\store_info.txt', 'a')
 
     login(path)
     obtain_links()
