@@ -135,7 +135,7 @@ def obtain_units_current_chapter(chapter: WebElement):
         driver.execute_script("window.open('');")
         driver.switch_to.window(driver.window_handles[1])
         driver.get(unit_url)
-        driver.implicitly_wait(2)
+        driver.implicitly_wait(5)
 
         # If its video, open new tab and get url
         if file_type[:1] == 'V':
@@ -176,6 +176,8 @@ def mark_as_completed(file_type: str):
         is_completed = len(driver.find_element(By.TAG_NAME, 'footer').find_elements(By.TAG_NAME, 'button'))
 
         if is_completed == 1:
+            if file_type[:1] == 'M':
+                    time.sleep(3)
             button = driver.find_element(By.XPATH, '//*[@id="course-player-footer"]/button/div')
             ac(driver).move_to_element(button).click().perform()
 
