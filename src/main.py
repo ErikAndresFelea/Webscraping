@@ -131,12 +131,6 @@ def obtain_units_current_chapter(chapter: WebElement):
         file_type = unit.find_element(By.XPATH, './/a/div[2]/div').get_attribute('innerHTML').split('\n')
         file_type = file_type[2].strip()
 
-        # Open new tab
-        driver.execute_script("window.open('');")
-        driver.switch_to.window(driver.window_handles[1])
-        driver.get(unit_url)
-        driver.implicitly_wait(5)
-
         # If its video, open new tab and get url
         if file_type[:1] == 'V':
             video_url = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
@@ -148,12 +142,15 @@ def obtain_units_current_chapter(chapter: WebElement):
         
         mark_as_completed(file_type)
         
-        driver.close()
-        driver.switch_to.window(driver.window_handles[0])
 
+def mark_as_completed(file_type: str, unit_url: str):
+    ''' Marks as completed the intended unit '''
 
-def mark_as_completed(file_type: str):
-    ''' Marks every unit of every chapter of every course as completed '''
+    # Open new tab
+    driver.execute_script("window.open('');")
+    driver.switch_to.window(driver.window_handles[1])
+    driver.get(unit_url)
+    driver.implicitly_wait(5)
     
     if file_type[:1] == 'V':
         # If none, its not completed
@@ -180,6 +177,9 @@ def mark_as_completed(file_type: str):
             time.sleep(1)
             button = driver.find_element(By.XPATH, '//*[@id="course-player-footer"]/button/div')
             ac(driver).move_to_element(button).click().perform()
+
+    driver.close()
+    driver.switch_to.window(driver.window_handles[0])
 
 
 if __name__ == '__main__':
