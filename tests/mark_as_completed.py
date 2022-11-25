@@ -37,12 +37,14 @@ def login(website: str):
 
     ''' EDIT FROM HERE ''' 
     units = driver.find_element(By.XPATH, '//*[@id="ui-id-2"]/ul').find_elements(By.TAG_NAME, 'li')
+    
     for unit in units:
         unit_url = unit.find_element(By.TAG_NAME, 'a').get_attribute('href')
 
         file_type = unit.find_element(By.XPATH, './/a/div[2]/div').get_attribute('innerHTML').split('\n')
         file_type = file_type[2].strip()
 
+        # Open a new tab
         driver.execute_script("window.open('');")
         driver.switch_to.window(driver.window_handles[1])
         driver.get(unit_url)
@@ -52,7 +54,7 @@ def login(website: str):
             driver.implicitly_wait(5)
             is_completed = len(driver.find_elements(By.TAG_NAME, 'footer'))
 
-            ''' Code already done here '''
+            ''' Main code here '''
             
             # If not completed, mark as completed
             if is_completed == 0:
@@ -64,18 +66,16 @@ def login(website: str):
                 playbar = driver.find_element(By.XPATH, '/html/body/div/div/div/div/div/div[2]/div[2]/div[2]/div/div[4]/div/div[4]/div')
                 ac(driver).move_to_element(playbar).click().perform()
 
-                driver.switch_to.window(driver.window_handles[0])
-
 
         else:
             # If one, its not completed
             is_completed = len(driver.find_element(By.TAG_NAME, 'footer').find_elements(By.TAG_NAME, 'button'))
 
-            ''' Code already done here '''
+            ''' Main code here here '''
 
             if is_completed == 1:
-                driver.find_element(By.TAG_NAME, 'button').click()
-
+                button = driver.find_element(By.XPATH, '//*[@id="course-player-footer"]/button/div')
+                ac(driver).move_to_element(button).click().perform()
 
         driver.close()
         driver.switch_to.window(driver.window_handles[0])
