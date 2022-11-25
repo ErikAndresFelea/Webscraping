@@ -1,2 +1,3 @@
-/src/credentials.txt
+/src/resources/credentials.txt
 /src/store_info.txt
+/src/stored/*

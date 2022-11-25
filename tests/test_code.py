@@ -50,10 +50,12 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.common.keys import Keys
 
 
 # Logs on the website
 def login(website: str):
+    ''' DONT EDIT '''
     # Open web page
     driver.get(website)
 
@@ -77,21 +79,18 @@ def login(website: str):
     first_course = courses[0].find_element(By.TAG_NAME, 'a').get_attribute('href')
     driver.get(first_course)
 
-    # Try to get text / video text.
+    ''' EDIT FROM HERE ''' 
     driver.implicitly_wait(2)
-    element = driver.find_element(By.XPATH, '//*[@id="ember797"]/div[2]/div').get_attribute('innerHTML').split('\n')
-    value = ''
-    for e in element:
-        x = e.strip()
-        if x[:1] == 'V':
-            value = x
+    url = driver.find_element(By.TAG_NAME, 'a').get_attribute('href')
+    driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + 't')
+    driver.get(url)
+    time.sleep(10)
+    
 
-    print(value)
-
-
+''' DONT EDIT '''
 if __name__ == '__main__':
     # Obtain credentials from file
-    file = open('C:\\Users\\Argnos\\Desktop\\SemanticBots\\src\\credentials.txt', 'rt')
+    file = open('src\\resources\\credentials.txt', 'rt')
     credentials = []
     for line in file:
         credentials.append(line)
