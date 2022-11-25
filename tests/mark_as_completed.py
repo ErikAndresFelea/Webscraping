@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains as ac
+from selenium.webdriver.support.wait import WebDriverWait
 
 
 # Logs on the website
@@ -38,6 +39,18 @@ def login(website: str):
     ''' EDIT FROM HERE ''' 
     units = driver.find_element(By.XPATH, '//*[@id="ui-id-2"]/ul').find_elements(By.TAG_NAME, 'li')
     
+    units.pop()
+    units.pop()
+    units.pop()
+    units.pop()
+    units.pop()
+    units.pop()
+    units.pop()
+    units.pop()
+    units.pop()
+    units.pop()
+    units.pop()
+    
     for unit in units:
         unit_url = unit.find_element(By.TAG_NAME, 'a').get_attribute('href')
 
@@ -54,8 +67,6 @@ def login(website: str):
             driver.implicitly_wait(5)
             is_completed = len(driver.find_elements(By.TAG_NAME, 'footer'))
 
-            ''' Main code here '''
-            
             # If not completed, mark as completed
             if is_completed == 0:
 
@@ -71,9 +82,9 @@ def login(website: str):
             # If one, its not completed
             is_completed = len(driver.find_element(By.TAG_NAME, 'footer').find_elements(By.TAG_NAME, 'button'))
 
-            ''' Main code here here '''
-
             if is_completed == 1:
+                if file_type[:1] == 'M':
+                    time.sleep(1)
                 button = driver.find_element(By.XPATH, '//*[@id="course-player-footer"]/button/div')
                 ac(driver).move_to_element(button).click().perform()
 
