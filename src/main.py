@@ -83,7 +83,7 @@ def obtain_links():
             driver.get(next_path)
              
     # And for every course gets all links
-
+    course_links.sort()
     for link in course_links:
         obtain_chapters_current_course(link)
     
@@ -129,26 +129,14 @@ def obtain_units_current_chapter(chapter: WebElement):
     # Get links of all content
     for unit in chapter_units:
         unit_url = unit.find_element(By.TAG_NAME, 'a').get_attribute('href')
-        unit_title = unit.find_element(By.TAG_NAME, 'a').find_elements(By.TAG_NAME, 'div')[1]
-        unit_title = unit_title.get_attribute('innerHTML')[1].strip()
+        unit_title = unit.find_element(By.TAG_NAME, 'a').find_elements(By.TAG_NAME, 'div')[1]           ### Check
+        unit_title = unit_title.get_attribute('innerHTML')[1].strip()           ### Check
 
-        # Checking type of content. Video, text, multimedia...
-        info = unit.find_element(By.XPATH, './/a/div[2]/div')
-        file_type = info.get_attribute('innerHTML').split('\n')
-        file_type = file_type[2].strip()[:1]
-
-        # Checking if it is prerequisite
-        spans = info.find_elements(By.TAG_NAME, 'span')
-        if len(spans) < 2:
-            prerequisite = False
-        else:
-            span = spans[len(spans) - 1].get_attribute('innerHTML').strip()
-            prerequisite = True if span == 'PRERREQUISITO' else False
+        file_type, prerequisite = filter_data(unit)
 
         # If its video, open new tab and get url
         if file_type[:1] == 'V':
             new_tab(unit_url)
-            driver.implicitly_wait(5)
             video_url = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
             file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + video_url + '\n')
 
@@ -157,7 +145,6 @@ def obtain_units_current_chapter(chapter: WebElement):
 
             driver.close()
             driver.switch_to.window(driver.window_handles[0])
-
 
         # If text, get unit url
         else:
@@ -172,6 +159,7 @@ def new_tab(tab_url: str):
     driver.execute_script("window.open('');")
     driver.switch_to.window(driver.window_handles[1])
     driver.get(tab_url)
+    driver.implicitly_wait(5)
 
 
 def mark_as_completed(file_type: str, unit_url: str):
@@ -193,7 +181,6 @@ def mark_as_completed(file_type: str, unit_url: str):
 
     elif file_type != 'E':
         new_tab(unit_url)
-        driver.implicitly_wait(5)
         
         # If one, its not completed
         if file_type == 'M':
@@ -207,6 +194,25 @@ def mark_as_completed(file_type: str, unit_url: str):
 
         driver.close()
         driver.switch_to.window(driver.window_handles[0])
+
+
+def filter_data(unit: WebElement) -> tuple[str, bool]:
+        ''' Gets the type of the file and if it is a prerequisite '''
+
+        # Checking type of content. Video, text, multimedia...
+        info = unit.find_element(By.XPATH, './/a/div[2]/div')
+        file_type = info.get_attribute('innerHTML').split('\n')
+        file_type = file_type[2].strip()
+
+        # Checking if it is prerequisite
+        spans = info.find_elements(By.TAG_NAME, 'span')
+        if len(spans) < 2:
+            prerequisite = False
+        else:
+            span = spans[len(spans) - 1].get_attribute('innerHTML').strip()
+            prerequisite = True if span == 'PRERREQUISITO' else False
+        
+        return file_type, prerequisite
 
 
 if __name__ == '__main__':
