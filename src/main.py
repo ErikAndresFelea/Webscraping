@@ -57,7 +57,7 @@ def obtain_links():
     '''Checks how many possible pages are and gets the links from all courses'''   
 
     # Check if we are on courses page 
-    cur_page = driver.find_element(By.TAG_NAME, 'header').find_element(By.LINK_TEXT, 'Mi Portal')
+    cur_page = driver.find_element(By.TAG_NAME, 'header').find_element(By.LINK_TEXT, 'Mi Portal').get_attribute('href')
     if driver.current_url != cur_page:
         driver.get(cur_page)
 
@@ -138,6 +138,7 @@ def obtain_units_current_chapter(chapter: WebElement):
 
         # Checking if it is prerequisite
         pre = info.find_elements(By.TAG_NAME, 'span')
+        pre = pre[len(pre) - 1].get_attribute('innerHTML')
         pre = True if pre[len(pre) - 1] == 'PRERREQUISITO' else False
 
         # If its video, open new tab and get url
@@ -189,7 +190,8 @@ def mark_as_completed(file_type: str, unit_url: str):
 
     elif file_type != 'E':
         new_tab(unit_url)
-
+        driver.implicitly_wait(5)
+        
         # If one, its not completed
         if file_type == 'M':
                 time.sleep(3)
