@@ -105,7 +105,7 @@ def obtain_chapters_current_course(course: str):
     '''Searches for all the units of all the chapters'''
     
     driver.get(course)  
-    file.write('Course --- > ' + driver.title + ' | ' + course + '\n')
+    file.write('Course --- > ' + driver.title + '\n')
     
     # Obtain all chapters of the current course
     driver.implicitly_wait(5)
