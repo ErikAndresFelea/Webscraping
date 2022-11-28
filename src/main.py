@@ -131,32 +131,48 @@ def obtain_units_current_chapter(chapter: WebElement):
         unit_title = unit.find_element(By.TAG_NAME, 'a').find_elements(By.TAG_NAME, 'div')[1]
         unit_title = unit_title.get_attribute('innerHTML')[1].strip()
 
-        # Checking if it is video or text. 2nd element has the text "Video" or "Text"
-        file_type = unit.find_element(By.XPATH, './/a/div[2]/div').get_attribute('innerHTML').split('\n')
-        file_type = file_type[2].strip()
+        # Checking type of content. Video, text, multimedia...
+        info = unit.find_element(By.XPATH, './/a/div[2]/div')
+        file_type = info.get_attribute('innerHTML').split('\n')
+        file_type = file_type[2].strip()[:1]
+
+        # Checking if it is prerequisite
+        pre = info.find_elements(By.TAG_NAME, 'span')
+        pre = True if pre[len(pre) - 1] == 'PRERREQUISITO' else False
 
         # If its video, open new tab and get url
         if file_type[:1] == 'V':
+            new_tab(unit_url)
             video_url = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
             file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + video_url + '\n')
 
+            if pre:
+                mark_as_completed(file_type, unit_url)
+
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
+
+
         # If text, get unit url
         else:
+            if pre:
+                mark_as_completed(file_type, unit_url)
+
             file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + unit_url + '\n')
         
-        mark_as_completed(file_type)
         
+
+def new_tab(tab_url: str):
+    ''' Open new tab with a url '''
+    driver.execute_script("window.open('');")
+    driver.switch_to.window(driver.window_handles[1])
+    driver.get(tab_url)
+
 
 def mark_as_completed(file_type: str, unit_url: str):
     ''' Marks as completed the intended unit '''
 
-    # Open new tab
-    driver.execute_script("window.open('');")
-    driver.switch_to.window(driver.window_handles[1])
-    driver.get(unit_url)
-    driver.implicitly_wait(5)
-    
-    if file_type[:1] == 'V':
+    if file_type == 'V':
         # If none, its not completed
         driver.implicitly_wait(5)
         is_completed = len(driver.find_elements(By.TAG_NAME, 'footer'))
@@ -171,9 +187,11 @@ def mark_as_completed(file_type: str, unit_url: str):
             playbar = driver.find_element(By.XPATH, '/html/body/div/div/div/div/div/div[2]/div[2]/div[2]/div/div[4]/div/div[4]/div')
             ac(driver).move_to_element(playbar).click().perform()
 
-    elif file_type[:1] != 'E':
+    elif file_type != 'E':
+        new_tab(unit_url)
+
         # If one, its not completed
-        if file_type[:1] == 'M':
+        if file_type == 'M':
                 time.sleep(3)
         is_completed = len(driver.find_element(By.TAG_NAME, 'footer').find_elements(By.TAG_NAME, 'button'))
 
@@ -182,8 +200,8 @@ def mark_as_completed(file_type: str, unit_url: str):
             button = driver.find_element(By.XPATH, '//*[@id="course-player-footer"]/button/div')
             ac(driver).move_to_element(button).click().perform()
 
-    driver.close()
-    driver.switch_to.window(driver.window_handles[0])
+        driver.close()
+        driver.switch_to.window(driver.window_handles[0])
 
 
 if __name__ == '__main__':
