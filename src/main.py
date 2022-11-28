@@ -23,7 +23,7 @@ def login(website: str):
     driver.implicitly_wait(1)
     driver.find_element(By.XPATH, '//*[@id="user[email]"]').send_keys(username)
     driver.find_element(By.XPATH, '//*[@id="user[password]"]').send_keys(passwd)
-    driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
+    # driver.find_element(By.CSS_SELECTOR, 'button.button button-primary g-recaptcha'.replace(' ', '.')).click()
 
     # Captcha
     captcha()
@@ -60,6 +60,7 @@ def obtain_links():
     cur_page = driver.find_element(By.TAG_NAME, 'header').find_element(By.LINK_TEXT, 'Mi Portal').get_attribute('href')
     if driver.current_url != cur_page:
         driver.get(cur_page)
+    driver.implicitly_wait(5)
 
     course_links = []
 
@@ -137,17 +138,21 @@ def obtain_units_current_chapter(chapter: WebElement):
         file_type = file_type[2].strip()[:1]
 
         # Checking if it is prerequisite
-        pre = info.find_elements(By.TAG_NAME, 'span')
-        pre = pre[len(pre) - 1].get_attribute('innerHTML')
-        pre = True if pre[len(pre) - 1] == 'PRERREQUISITO' else False
+        spans = info.find_elements(By.TAG_NAME, 'span')
+        if len(spans) < 2:
+            prerequisite = False
+        else:
+            span = spans[len(spans) - 1].get_attribute('innerHTML').strip()
+            prerequisite = True if span == 'PRERREQUISITO' else False
 
         # If its video, open new tab and get url
         if file_type[:1] == 'V':
             new_tab(unit_url)
+            driver.implicitly_wait(5)
             video_url = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
             file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + video_url + '\n')
 
-            if pre:
+            if prerequisite:
                 mark_as_completed(file_type, unit_url)
 
             driver.close()
@@ -156,13 +161,12 @@ def obtain_units_current_chapter(chapter: WebElement):
 
         # If text, get unit url
         else:
-            if pre:
+            if prerequisite:
                 mark_as_completed(file_type, unit_url)
 
             file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + unit_url + '\n')
         
         
-
 def new_tab(tab_url: str):
     ''' Open new tab with a url '''
     driver.execute_script("window.open('');")
@@ -175,7 +179,6 @@ def mark_as_completed(file_type: str, unit_url: str):
 
     if file_type == 'V':
         # If none, its not completed
-        driver.implicitly_wait(5)
         is_completed = len(driver.find_elements(By.TAG_NAME, 'footer'))
 
         # If not completed, mark as completed
