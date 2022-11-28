@@ -54,8 +54,13 @@ def captcha():
 
 
 def obtain_links():
-    
-    '''Checks how many possible pages are and gets the links from all courses'''    
+    '''Checks how many possible pages are and gets the links from all courses'''   
+
+    # Check if we are on courses page 
+    cur_page = driver.find_element(By.TAG_NAME, 'header').find_element(By.LINK_TEXT, 'Mi Portal')
+    if driver.current_url != cur_page:
+        driver.get(cur_page)
+
     course_links = []
 
     # Visits every page with courses
@@ -83,7 +88,6 @@ def obtain_links():
     
 
 def obtain_courses_current_page() -> list:
-    
     '''Returns a list with the links of all courses from the current page'''
     # Get all course links from current page
     driver.implicitly_wait(5)
