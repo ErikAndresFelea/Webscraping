@@ -134,6 +134,7 @@ def obtain_units_current_chapter(chapter: WebElement):
         unit_title = unit_title[1].strip()
 
         file_type, prerequisite = filter_data(unit)
+        print('Prerequisito: ', prerequisite)
 
         # If its video, open new tab and get url
         if file_type == 'V':
@@ -169,10 +170,12 @@ def mark_as_completed(file_type: str, unit_url: str):
 
     if file_type == 'V':
         # If none, its not completed
-        is_completed = len(driver.find_elements(By.TAG_NAME, 'footer'))
+        elem = len(driver.find_elements(By.TAG_NAME, 'footer'))
+        is_completed = False if elem == 0 else True
+        print('\tCompletado:', is_completed)
 
         # If not completed, mark as completed
-        if is_completed == 0:
+        if not is_completed:
 
             # Switch to iframe and move playbar
             iframe = driver.find_element(By.TAG_NAME, 'iframe')
@@ -187,11 +190,13 @@ def mark_as_completed(file_type: str, unit_url: str):
         # If one, its not completed
         if file_type == 'M':
                 time.sleep(3)
-        is_completed = len(driver.find_element(By.TAG_NAME, 'footer').find_elements(By.TAG_NAME, 'button'))
+        elem = len(driver.find_element(By.TAG_NAME, 'footer').find_elements(By.TAG_NAME, 'button'))
+        is_completed = False if elem == 1 else True
 
-        if is_completed == 1:
+        if not is_completed:
             time.sleep(1)
-            button = driver.find_element(By.XPATH, '//*[@id="course-player-footer"]/button/div')
+            element = driver.find_element(By.ID, 'course-player-footer')
+            button = element.find_element(By.XPATH, './button/div')
             ac(driver).move_to_element(button).click().perform()
 
         driver.close()
