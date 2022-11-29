@@ -59,7 +59,8 @@ def login(website: str):
         # If its video, open new tab and get url
         if file_type == 'V':
             new_tab(unit_url)
-            video_url = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')         ### Problema, tarda mucho en ejecutarse
+            video_url = driver.find_element(By.XPATH, '//*[@id="content-inner"]')
+            video_url = video_url.find_element(By.XPATH, './div[2]/iframe').get_attribute('src')         ### Problema, tarda mucho en ejecutarse
             print('\t\t\tSegmento 1', time.time() - a)
             file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + video_url + '\n')
             if prerequisite:
@@ -129,6 +130,7 @@ def filter_data(unit: WebElement, a: any) -> tuple[str, bool]:
 
         # Checking if it is prerequisite
         print('\t\t\tSegmento 1', time.time() - a)
+        driver.implicitly_wait(0.1)
         spans = info.find_elements(By.XPATH, './/span')         ### Problema, tarda mucho si el elemento no tiene span
         print('\t\t\tSegmento 2', time.time() - a)
         if len(spans) < 2:
@@ -154,7 +156,7 @@ if __name__ == '__main__':
     # Start driver on desired website
     chrome_options = Options()
     chrome_options.add_argument('--start-maximized')
-    chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--headless')
     chrome_options.add_argument('--log-level=3')
     driver = webdriver.Chrome(options=chrome_options)
     path = 'https://app.web3mba.io/'
