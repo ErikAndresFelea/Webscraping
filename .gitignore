@@ -1,4 +1,4 @@
 /src/resources/credentials.txt
 /src/store_info.txt
 /src/stored/*
-/test/test_output.txt
+/tests/test_output.txt
