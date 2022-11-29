@@ -202,24 +202,24 @@ def mark_as_completed(file_type: str, unit_url: str):
 
 
 def filter_data(unit: WebElement) -> tuple[str, bool]:
-        ''' Gets the type of the file and if it is a prerequisite '''
+    ''' Gets the type of the file and if it is a prerequisite '''
 
-        # Checking type of content. Video, text, multimedia...
-        info = unit.find_element(By.XPATH, './/a/div[2]/div')
-        file_type = info.get_attribute('innerHTML').split('\n')
-        file_type = file_type[2].strip()
+    # Checking type of content. Video, text, multimedia...
+    info = unit.find_element(By.XPATH, './/a/div[2]/div')
+    file_type = info.get_attribute('innerHTML').split('\n')
+    file_type = file_type[2].strip()
 
-        # Checking if it is prerequisite
-        driver.implicitly_wait(0)
-        spans = info.find_elements(By.TAG_NAME, 'span')
+    # Checking if it is prerequisite
+    driver.implicitly_wait(0)
+    spans = info.find_elements(By.TAG_NAME, 'span')
 
-        if len(spans) < 2:
-            prerequisite = False
-        else:
-            span = spans[len(spans) - 1].get_attribute('innerHTML').strip()
-            prerequisite = True if span == 'PRERREQUISITO' else False
-        
-        return file_type[:1], prerequisite
+    if len(spans) < 2:
+        prerequisite = False
+    else:
+        span = spans[len(spans) - 1].get_attribute('innerHTML').strip()
+        prerequisite = True if span == 'PRERREQUISITO' else False
+    
+    return file_type[:1], prerequisite
 
 
 if __name__ == '__main__':
