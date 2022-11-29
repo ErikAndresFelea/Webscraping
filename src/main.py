@@ -134,7 +134,6 @@ def obtain_units_current_chapter(chapter: WebElement):
         unit_title = unit_title[1].strip()
 
         file_type, prerequisite = filter_data(unit)
-        print('Prerequisito: ', prerequisite)
 
         # If its video, open new tab and get url
         if file_type == 'V':
@@ -172,7 +171,6 @@ def mark_as_completed(file_type: str, unit_url: str):
         # If none, its not completed
         elem = len(driver.find_elements(By.TAG_NAME, 'footer'))
         is_completed = False if elem == 0 else True
-        print('\tCompletado:', is_completed)
 
         # If not completed, mark as completed
         if not is_completed:
