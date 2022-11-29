@@ -72,7 +72,8 @@ def obtain_links():
         course_links.extend(page_links)
         
         # Seachs for additional page
-        page_elem = driver.find_element(By.XPATH, '//*[@id="main-content"]/section/div/nav/ul/li[7]')
+        page_elem = driver.find_element(By.ID, 'main-content').find_element(By.XPATH, './section/div/nav/ul/li[7]')
+        driver.implicitly_wait(0.4)
         link_elem = page_elem.find_elements(By.TAG_NAME, 'a')
         
         # If there is no other page, end loop, if yes, jump
@@ -83,10 +84,8 @@ def obtain_links():
             driver.get(next_path)
              
     # And for every course gets all links
-    # course_links.sort()
-    obtain_chapters_current_course(course_links[0])
-    # for link in course_links:
-    #     obtain_chapters_current_course(link)
+    for link in course_links:
+        obtain_chapters_current_course(link)
     
 
 def obtain_courses_current_page() -> list:
@@ -127,24 +126,20 @@ def obtain_units_current_chapter(chapter: WebElement):
 
     chapter_units = chapter.find_element(By.TAG_NAME, 'ul').find_elements(By.TAG_NAME, 'li')
 
-    a = time.time()
-    print('Capitulo ', time.time() - a)
-
     # Get links of all content
     for unit in chapter_units:
-        print('\tUnidad ', time.time() - a)
         unit_url = unit.find_element(By.TAG_NAME, 'a').get_attribute('href')
-        unit_title = unit.find_element(By.TAG_NAME, 'a').find_elements(By.TAG_NAME, 'div')[1]           ### Check
-        unit_title = unit_title.get_attribute('innerHTML')[1].strip()           ### Check
+        unit_title = unit.find_element(By.TAG_NAME, 'a').find_elements(By.TAG_NAME, 'div')[1]
+        unit_title = unit_title.get_attribute('innerHTML').split('\n')
+        unit_title = unit_title[1].strip()
 
-        print('\t\tobtener datos ', time.time() - a)
         file_type, prerequisite = filter_data(unit)
-        print('\t\tdatos obtenidos ', time.time() - a)
 
         # If its video, open new tab and get url
         if file_type == 'V':
             new_tab(unit_url)
-            video_url = driver.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
+            element = driver.find_element(By.ID, 'content-inner')
+            video_url = element.find_element(By.XPATH, './div[2]/iframe').get_attribute('src')
             file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + video_url + '\n')
 
             if prerequisite:
@@ -159,7 +154,6 @@ def obtain_units_current_chapter(chapter: WebElement):
                 mark_as_completed(file_type, unit_url)
 
             file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + unit_url + '\n')
-        print('\t\tdatos filtrados ', time.time() - a)
         
         
 def new_tab(tab_url: str):
@@ -213,7 +207,9 @@ def filter_data(unit: WebElement) -> tuple[str, bool]:
         file_type = file_type[2].strip()
 
         # Checking if it is prerequisite
+        driver.implicitly_wait(0)
         spans = info.find_elements(By.TAG_NAME, 'span')
+
         if len(spans) < 2:
             prerequisite = False
         else:
