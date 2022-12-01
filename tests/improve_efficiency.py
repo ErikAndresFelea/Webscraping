@@ -163,8 +163,6 @@ if __name__ == '__main__':
 
     # Clear old data & store new data
     file = open('tests\\test_output.txt', 'w')
-    file.close()
-    file = open('tests\\test_output.txt', 'a')
 
     login(path)
 
