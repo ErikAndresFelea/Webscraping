@@ -105,7 +105,7 @@ def obtain_chapters_current_course(course: str):
     '''Searches for all the units of all the chapters'''
     
     driver.get(course)  
-    file.write('Course --- > ' + driver.title + '\n')
+    file.write('Course --- ' + driver.title + '\n')
     
     # Obtain all chapters of the current course
     driver.implicitly_wait(5)
@@ -122,7 +122,7 @@ def obtain_units_current_chapter(chapter: WebElement):
     '''Stores links from all units'''
     
     chapter_title = chapter.find_element(By.TAG_NAME, 'h2').text
-    file.write('\tChapter --- > ' + chapter_title + '\n')
+    file.write('\tChapter --- ' + chapter_title + '\n')
 
     chapter_units = chapter.find_element(By.TAG_NAME, 'ul').find_elements(By.TAG_NAME, 'li')
 
@@ -139,8 +139,8 @@ def obtain_units_current_chapter(chapter: WebElement):
         if file_type == 'V':
             new_tab(unit_url)
             element = driver.find_element(By.ID, 'content-inner')
-            video_url = element.find_element(By.XPATH, './div[2]/iframe').get_attribute('src')
-            file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + video_url + '\n')
+            video_url = element.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
+            file.write('\t\t(' + file_type.upper() + ') --- ' + unit_title.upper() + ' --- ' + video_url + '\n')
 
             if prerequisite:
                 mark_as_completed(file_type, unit_url)
@@ -153,7 +153,7 @@ def obtain_units_current_chapter(chapter: WebElement):
             if prerequisite:
                 mark_as_completed(file_type, unit_url)
 
-            file.write('\t\t(' + file_type.upper() + ') ' + unit_title.upper() + ' --- > ' + unit_url + '\n')
+            file.write('\t\t(' + file_type.upper() + ') --- ' + unit_title.upper() + ' --- ' + unit_url + '\n')
         
         
 def new_tab(tab_url: str):
@@ -170,7 +170,7 @@ def mark_as_completed(file_type: str, unit_url: str):
     if file_type == 'V':
         # If none, its not completed
         elem = len(driver.find_elements(By.TAG_NAME, 'footer'))
-        is_completed = False if elem == 0 else True
+        is_completed = False if elem != 1 else True
 
         # If not completed, mark as completed
         if not is_completed:
@@ -187,9 +187,9 @@ def mark_as_completed(file_type: str, unit_url: str):
         
         # If one, its not completed
         if file_type == 'M':
-                time.sleep(3)
+                time.sleep(5)
         elem = len(driver.find_element(By.TAG_NAME, 'footer').find_elements(By.TAG_NAME, 'button'))
-        is_completed = False if elem == 1 else True
+        is_completed = False if elem != 2 else True
 
         if not is_completed:
             time.sleep(1)
@@ -239,9 +239,9 @@ if __name__ == '__main__':
     path = 'https://app.web3mba.io/'
 
     # Clear old data & store new data
-    file = open('src\\store_info.txt', 'w')
+    file = open('src\\stored\\info_gathered.txt', 'w')
     file.close()
-    file = open('src\\store_info.txt', 'a')
+    file = open('src\\stored\\info_gathered.txt', 'w')
 
     login(path)
     obtain_links()
