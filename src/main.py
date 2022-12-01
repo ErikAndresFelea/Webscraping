@@ -241,7 +241,7 @@ if __name__ == '__main__':
     # Clear old data & store new data
     file = open('src\\stored\\info_gathered.txt', 'w')
     file.close()
-    file = open('src\\stored\\info_gathered.txt', 'w')
+    file = open('src\\stored\\info_gathered.txt', 'w', encoding='utf-8')
 
     login(path)
     obtain_links()
