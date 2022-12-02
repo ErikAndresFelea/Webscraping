@@ -159,6 +159,7 @@ def obtain_units_current_chapter(chapter: WebElement, course_path: str):
         # If its video, open new tab and get url
         if file_type == 'V':
             new_tab(unit_url)
+            driver.implicitly_wait(5)
             element = driver.find_element(By.ID, 'content-inner')
             video_url = element.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
             unit_url = video_url
