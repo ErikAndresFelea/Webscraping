@@ -179,6 +179,7 @@ def obtain_units_current_chapter(chapter: WebElement, course_path: str):
         unit_file.close()
 
         file.write('\t\t(' + file_type.upper() + ') --- ' + unit_title.upper() + ' --- ' + unit_url + '\n')
+    file.write('\n\n\n')
         
         
 def new_tab(tab_url: str):
@@ -186,7 +187,7 @@ def new_tab(tab_url: str):
     driver.execute_script("window.open('');")
     driver.switch_to.window(driver.window_handles[1])
     driver.get(tab_url)
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(10)
 
 
 def mark_as_completed(file_type: str, unit_url: str):
