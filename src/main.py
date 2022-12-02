@@ -1,4 +1,5 @@
 import time
+import re
 from pathlib import Path
 
 from selenium import webdriver
@@ -111,6 +112,8 @@ def obtain_chapters_current_course(course: str):
     file.write('Course --- ' + course_title + '\n')
 
     # Create a directory for current course
+    special_chars = '!@#$%^&*();:,./<>?\`~=_+'
+    course_title = re.sub(special_chars, ' ', course_title)
     course_path = 'src\\courses\\' + course_title
     course_path = course_path.replace('|', '-').replace(' - Web3MBA', '')
     Path(course_path).mkdir(parents=True, exist_ok=True)
@@ -131,8 +134,10 @@ def obtain_units_current_chapter(chapter: WebElement, course_path: str):
     file.write('\tChapter --- ' + chapter_title + '\n')
 
     # Create a directory for current chapter inside the course
+    special_chars = '!@#$%^&*();:,./<>?\`~=_+'
+    chapter_title = re.sub(special_chars, ' ', chapter_title)
     chapter_path = course_path + '\\' + chapter_title
-    chapter_path = chapter_path.replace('|', '-').replace(' - Web3MBA', '')
+    chapter_path = chapter_path.replace('|', '-')
     Path(chapter_path).mkdir(parents=True, exist_ok=True)
 
     # Get links of all content
@@ -144,7 +149,8 @@ def obtain_units_current_chapter(chapter: WebElement, course_path: str):
         unit_title = unit_title[1].strip()
 
         # Create a file for every unit inside the chapter
-        file_path = chapter_path + '\\' + unit_title + '.txt'
+        unit_path = re.sub(special_chars, ' ', unit_title)
+        file_path = chapter_path + '\\' + unit_path + '.txt'
         file_path = file_path.replace('|', '-')
         Path(file_path).touch(exist_ok=True)
 
