@@ -112,10 +112,7 @@ def obtain_chapters_current_course(course: str):
     file.write('Course --- ' + course_title + '\n')
 
     # Create a directory for current course
-    special_chars = '[!@#$%^&*();:,./<>?\`~=_+]'
-    course_title = re.sub(special_chars, '', course_title)
-    course_path = 'src\\courses\\' + course_title
-    course_path = course_path.replace('|', '-').replace(' - Web3MBA', '')
+    course_path = path_maker('src\\courses', course_title, '').replace(' - Web3MBA', '')
     Path(course_path).mkdir(parents=True, exist_ok=True)
     
     # Obtain all chapters of the current course
@@ -134,10 +131,7 @@ def obtain_units_current_chapter(chapter: WebElement, course_path: str):
     file.write('\tChapter --- ' + chapter_title + '\n')
 
     # Create a directory for current chapter inside the course
-    special_chars = '[!@#$%^&*();:,./<>?\`~=_+<]'
-    chapter_title = re.sub(special_chars, '', chapter_title)
-    chapter_path = course_path + '\\' + chapter_title
-    chapter_path = chapter_path.replace('|', '-')
+    chapter_path = path_maker(course_path, chapter_title, '')
     Path(chapter_path).mkdir(parents=True, exist_ok=True)
 
     # Get links of all content
@@ -149,9 +143,7 @@ def obtain_units_current_chapter(chapter: WebElement, course_path: str):
         unit_title = unit_title[1].strip()
 
         # Create a file for every unit inside the chapter
-        file_path = re.sub(special_chars, '', unit_title)
-        unit_path = chapter_path + '\\' + file_path + '.txt'
-        unit_path = unit_path.replace('|', '-')
+        unit_path = path_maker(chapter_path, unit_title, '.txt')
         Path(unit_path).touch(exist_ok=True)
 
         file_type, prerequisite = filter_data(unit)
@@ -181,6 +173,13 @@ def obtain_units_current_chapter(chapter: WebElement, course_path: str):
 
         file.write('\t\t(' + file_type.upper() + ') --- ' + unit_title.upper() + ' --- ' + unit_url + '\n')
     file.write('\n\n\n')
+
+
+def path_maker(old_path: str, reformat: str, extension: str) -> str:
+    special_chars = '[!@#$%^&*();:,./<>?\`~=_+<]'
+    new_str = re.sub(special_chars, '', reformat)
+    new_path = old_path + '\\' + new_str + extension
+    return new_path.replace('|', '-')
         
         
 def new_tab(tab_url: str):
