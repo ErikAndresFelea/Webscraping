@@ -112,8 +112,8 @@ def obtain_chapters_current_course(course: str):
     file.write('Course --- ' + course_title + '\n')
 
     # Create a directory for current course
-    special_chars = '!@#$%^&*();:,./<>?\`~=_+'
-    course_title = re.sub(special_chars, ' ', course_title)
+    special_chars = '[!@#$%^&*();:,./<>?\`~=_+]'
+    course_title = re.sub(special_chars, '', course_title)
     course_path = 'src\\courses\\' + course_title
     course_path = course_path.replace('|', '-').replace(' - Web3MBA', '')
     Path(course_path).mkdir(parents=True, exist_ok=True)
@@ -134,8 +134,8 @@ def obtain_units_current_chapter(chapter: WebElement, course_path: str):
     file.write('\tChapter --- ' + chapter_title + '\n')
 
     # Create a directory for current chapter inside the course
-    special_chars = '!@#$%^&*();:,./<>?\`~=_+'
-    chapter_title = re.sub(special_chars, ' ', chapter_title)
+    special_chars = '[!@#$%^&*();:,./<>?\`~=_+<]'
+    chapter_title = re.sub(special_chars, '', chapter_title)
     chapter_path = course_path + '\\' + chapter_title
     chapter_path = chapter_path.replace('|', '-')
     Path(chapter_path).mkdir(parents=True, exist_ok=True)
@@ -149,10 +149,10 @@ def obtain_units_current_chapter(chapter: WebElement, course_path: str):
         unit_title = unit_title[1].strip()
 
         # Create a file for every unit inside the chapter
-        unit_path = re.sub(special_chars, ' ', unit_title)
-        file_path = chapter_path + '\\' + unit_path + '.txt'
-        file_path = file_path.replace('|', '-')
-        Path(file_path).touch(exist_ok=True)
+        file_path = re.sub(special_chars, '', unit_title)
+        unit_path = chapter_path + '\\' + file_path + '.txt'
+        unit_path = unit_path.replace('|', '-')
+        Path(unit_path).touch(exist_ok=True)
 
         file_type, prerequisite = filter_data(unit)
 
@@ -174,7 +174,7 @@ def obtain_units_current_chapter(chapter: WebElement, course_path: str):
             if prerequisite:
                 mark_as_completed(file_type, unit_url)
 
-        unit_file = open(file_path, 'w', encoding = 'utf-8')
+        unit_file = open(unit_path, 'w', encoding = 'utf-8')
         unit_file.write(file_type.upper() + '\n' + unit_title + '\n' + unit_url + '\n')
         unit_file.close()
 
