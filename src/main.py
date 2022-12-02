@@ -265,9 +265,7 @@ if __name__ == '__main__':
     driver = webdriver.Chrome(options=chrome_options)
     path = 'https://app.web3mba.io/'
 
-    # Clear old data & store new data
-    # file = open('src\\stored\\info_gathered.txt', 'w')
-    # file.close()
+    # write on a file
     file = open('src\\resources\\info_gathered.txt', 'w', encoding='utf-8')
 
     login(path)
