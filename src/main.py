@@ -1,4 +1,5 @@
 import time
+from pathlib import Path
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -104,8 +105,15 @@ def obtain_courses_current_page() -> list:
 def obtain_chapters_current_course(course: str):
     '''Searches for all the units of all the chapters'''
     
-    driver.get(course)  
-    file.write('Course --- ' + driver.title + '\n')
+    driver.get(course)
+    driver.implicitly_wait(2)  
+    course_title = driver.title
+    file.write('Course --- ' + course_title + '\n')
+
+    # Create a directory for current course
+    course_path = 'src\\courses\\' + course_title
+    course_path = course_path.replace('|', '-').replace(' - Web3MBA', '')
+    Path(course_path).mkdir(parents=True, exist_ok=True)
     
     # Obtain all chapters of the current course
     driver.implicitly_wait(5)
@@ -113,25 +121,32 @@ def obtain_chapters_current_course(course: str):
     
     # For every chapter of a course
     for chapter in chapters:
-        obtain_units_current_chapter(chapter)
-
-    file.write('\n\n\n')
+        obtain_units_current_chapter(chapter, course_path)
 
 
-def obtain_units_current_chapter(chapter: WebElement):
+def obtain_units_current_chapter(chapter: WebElement, course_path: str):
     '''Stores links from all units'''
     
     chapter_title = chapter.find_element(By.TAG_NAME, 'h2').text
     file.write('\tChapter --- ' + chapter_title + '\n')
 
-    chapter_units = chapter.find_element(By.TAG_NAME, 'ul').find_elements(By.TAG_NAME, 'li')
+    # Create a directory for current chapter inside the course
+    chapter_path = course_path + '\\' + chapter_title
+    chapter_path = chapter_path.replace('|', '-').replace(' - Web3MBA', '')
+    Path(chapter_path).mkdir(parents=True, exist_ok=True)
 
     # Get links of all content
+    chapter_units = chapter.find_element(By.TAG_NAME, 'ul').find_elements(By.TAG_NAME, 'li')
     for unit in chapter_units:
         unit_url = unit.find_element(By.TAG_NAME, 'a').get_attribute('href')
         unit_title = unit.find_element(By.TAG_NAME, 'a').find_elements(By.TAG_NAME, 'div')[1]
         unit_title = unit_title.get_attribute('innerHTML').split('\n')
         unit_title = unit_title[1].strip()
+
+        # Create a file for every unit inside the chapter
+        file_path = chapter_path + '\\' + unit_title + '.txt'
+        file_path = file_path.replace('|', '-')
+        Path(file_path).touch(exist_ok=True)
 
         file_type, prerequisite = filter_data(unit)
 
@@ -140,7 +155,7 @@ def obtain_units_current_chapter(chapter: WebElement):
             new_tab(unit_url)
             element = driver.find_element(By.ID, 'content-inner')
             video_url = element.find_element(By.TAG_NAME, 'iframe').get_attribute('src')
-            file.write('\t\t(' + file_type.upper() + ') --- ' + unit_title.upper() + ' --- ' + video_url + '\n')
+            unit_url = video_url
 
             if prerequisite:
                 mark_as_completed(file_type, unit_url)
@@ -153,7 +168,11 @@ def obtain_units_current_chapter(chapter: WebElement):
             if prerequisite:
                 mark_as_completed(file_type, unit_url)
 
-            file.write('\t\t(' + file_type.upper() + ') --- ' + unit_title.upper() + ' --- ' + unit_url + '\n')
+        unit_file = open(file_path, 'w', encoding = 'utf-8')
+        unit_file.write(file_type.upper() + '\n' + unit_title + '\n' + unit_url + '\n')
+        unit_file.close()
+
+        file.write('\t\t(' + file_type.upper() + ') --- ' + unit_title.upper() + ' --- ' + unit_url + '\n')
         
         
 def new_tab(tab_url: str):
