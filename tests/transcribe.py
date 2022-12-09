@@ -1,13 +1,24 @@
 import whisper
+import time
 
+start = time.time()
 audio_path = 'src\\resources\\JavaScript in 100 Seconds.mp3'
 
-model = whisper.load_model('small')
-result = model.transcribe(audio_path, fp16 = False, language = 'es')
+model = whisper.load_model('base')
+result = model.transcribe(audio_path, fp16 = False, language = 'en')
 print(result['text'])
 
+first_mode = time.time() - start
+start = time.time()
 
-''' Atempt to write the results on a file '''
+model = whisper.load_model('medium', device = 'cuda')
+result = model.transcribe(audio_path, fp16 = False, language = 'en')
+print(result['text'])
+
+second_mode = time.time() - start
+
+print(first_mode)
+print(second_mode)
 ### file = open('tests\\test_output.txt', 'w', encoding='utf-8')
 ### file.write(result['text'])
 ### file.close()
