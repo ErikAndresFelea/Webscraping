@@ -9,6 +9,8 @@ result = model.transcribe(audio_path, fp16 = False, language = 'en')
 print(result['text'])
 
 first_mode = time.time() - start
+'''
+Not enough memory for cuda
 start = time.time()
 
 model = whisper.load_model('medium', device = 'cuda')
@@ -17,8 +19,9 @@ print(result['text'])
 
 second_mode = time.time() - start
 
-print(first_mode)
 print(second_mode)
+'''
+print(first_mode)
 ### file = open('tests\\test_output.txt', 'w', encoding='utf-8')
 ### file.write(result['text'])
 ### file.close()
